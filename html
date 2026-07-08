@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản Lý Bất Động Sản</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f2f2f2;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+.box{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin-bottom:20px;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+h1{
+    text-align:center;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:5px 0;
+    box-sizing:border-box;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    cursor:pointer;
+    border-radius:5px;
+    margin-top:5px;
+}
+
+.save{
+    background:#28a745;
+    color:white;
+}
+
+.search{
+    background:#007bff;
+    color:white;
+}
+
+.delete{
+    background:#dc3545;
+    color:white;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    margin-top:10px;
+    box-shadow:0 1px 3px rgba(0,0,0,.1);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📌 Quản Lý Bất Động Sản</h1>
+
+<div class="box">
+    <h3>Thêm BĐS</h3>
+
+    <input type="text" id="address" placeholder="Địa chỉ">
+
+    <input type="text" id="price" placeholder="Giá">
+
+    <input type="text" id="area" placeholder="Diện tích">
+
+    <button class="save" onclick="addHouse()">Lưu BĐS</button>
+</div>
+
+<div class="box">
+    <h3>Tìm kiếm</h3>
+
+    <input type="text" id="searchInput" placeholder="Nhập địa chỉ">
+
+    <button class="search" onclick="searchHouse()">Tìm</button>
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+let houses =
+JSON.parse(localStorage.getItem("houses")) || [];
+
+renderHouses(houses);
+
+function addHouse(){
+
+    const address =
+    document.getElementById("address").value;
+
+    const price =
+    document.getElementById("price").value;
+
+    const area =
+    document.getElementById("area").value;
+
+    if(address === ""){
+        alert("Nhập địa chỉ");
+        return;
+    }
+
+    houses.push({
+        id: Date.now(),
+        address,
+        price,
+        area
+    });
+
+    localStorage.setItem(
+        "houses",
+        JSON.stringify(houses)
+    );
+
+    renderHouses(houses);
+
+    document.getElementById("address").value="";
+    document.getElementById("price").value="";
+    document.getElementById("area").value="";
+}
+
+function renderHouses(data){
+
+    let html="";
+
+    data.forEach(h=>{
+
+        html += `
+        <div class="card">
+
+            <h3>${h.address}</h3>
+
+            <p><b>Giá:</b> ${h.price}</p>
+
+            <p><b>Diện tích:</b> ${h.area}</p>
+
+            <button
+            class="delete"
+            onclick="deleteHouse(${h.id})">
+            Xóa
+            </button>
+
+        </div>
+        `;
+    });
+
+    document.getElementById("result").innerHTML=html;
+}
+
+function searchHouse(){
+
+    const keyword =
+    document.getElementById("searchInput")
+    .value
+    .toLowerCase();
+
+    const filtered =
+    houses.filter(h =>
+        h.address
+        .toLowerCase()
+        .includes(keyword)
+    );
+
+    renderHouses(filtered);
+}
+
+function deleteHouse(id){
+
+    houses =
+    houses.filter(h=>h.id!==id);
+
+    localStorage.setItem(
+        "houses",
+        JSON.stringify(houses)
+    );
+
+    renderHouses(houses);
+}
+
+</script>
+
+</body>
+</html>
